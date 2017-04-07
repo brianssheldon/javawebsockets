@@ -13,15 +13,12 @@ $(document).ready(function() {
         center: lonlat, // starting position
         zoom: 10.14 // starting zoom
     });
-    
     map.on('rotate', function(e) {
         dragAndDropped = true;
     });
-
     map.on('drag', function(e) {
         dragAndDropped = true;
     });
-
     // map.on('mouseup', function(e) {
     //     closePopup();
     //     if (dragAndDropped) {
@@ -50,7 +47,6 @@ $(document).ready(function() {
         }
 
         console.log('clickkkk', e.originalEvent.which);
-
         if (e.originalEvent.which != 1) { // not left click
             // createMarker(e.lngLat.lng, e.lngLat.lat);
         } else { // not left click
@@ -59,15 +55,12 @@ $(document).ready(function() {
         }
         // console.log(map.getZoom());
     });
-
     map.addControl(new mapboxgl.NavigationControl());
-
     map.addControl(new mapboxgl.ScaleControl({
         position: 'bottom-right',
         maxWidth: 80,
         unit: 'imperial'
     }));
-
     var navigationHtml =
         '<button class="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate" type="button" onclick="flytolocation()" accesskey="h"' +
         ' title="Reset map back to original view. Hot key: <alt> h"><span class="arrow";"></span></button>';
@@ -75,12 +68,11 @@ $(document).ready(function() {
     $('.mapboxgl-ctrl-group').append(navigationHtml);
 });
 
-function createMarker(lng, lat) {
+function createMarker(lng, lat, sendWS) {
     console.log('createMarker', lat, lng);
     let marker = getGeoJsonForMarker(lng, lat);
     console.log('marker', marker);
     let randomImg = 'images/a' + Math.floor((Math.random() * 8) + 1) + '.gif';
-
     // create a DOM element for the marker
     var el = document.createElement('div');
     el.className = 'marker';
@@ -88,7 +80,6 @@ function createMarker(lng, lat) {
     el.style.backgroundImage = 'url(' + randomImg + ')';
     el.style.width = '50px';
     el.style.height = '50px';
-
     // el.addEventListener('click', function() {
     //     // window.alert(marker.properties.message);
     //     console.log('click', this);
@@ -106,7 +97,6 @@ function createMarker(lng, lat) {
         .setLngLat([lng, lat])
         // .setPopup(popup)
         .addTo(map));
-
     $('#markerId_' + kounter).append(
         '<div class="markerLabel" id="markerLabel_' + kounter + '">' + kounter + '</div>');
     $('#markerId_' + kounter).mouseup(function(a, b, c) {
@@ -116,6 +106,9 @@ function createMarker(lng, lat) {
     //     console.log('mouseup on markerLabel_' + kounter);
     // });
     closePopup();
+    if(sendWS){
+        sendNewMarkerToServer(lng, lat, kounter);
+    }
     kounter++;
 }
 
@@ -149,15 +142,13 @@ function makePopupPicker(e) {
     let lat = e.lngLat.lat;
     let x = e.point.x;
     if (x > 150) x = x - 150;
-
     let theHtml = '';
     theHtml += "<div id='popupmain' class='popupmain' ";
     theHtml += " style='left: " + x + "px; top: " + e.point.y + "px;'>";
     // theHtml += '<div class="sometext">some text goes here</div>';
-    theHtml += "<button class='buttonx' onclick='createMarker(" + lng + "," + lat + ")'>Add Marker</button>"
+    theHtml += "<button class='buttonx' onclick='createMarker(" + lng + "," + lat + ", true)'>Add Marker</button>"
     theHtml += "<button class='buttonx' onclick='closePopup()'>Close</button>"
     theHtml += "<br></div>";
-
     $('#popup').append(theHtml);
 }
 
@@ -171,3 +162,35 @@ function flytolocation() {
         zoom: 10.14
     });
 }
+
+function sendNewMarkerToServer(lng, lat, kounter) {
+
+    let newMarker = {
+        id: kounter,
+        lng: lng,
+        lat: lat
+    };
+
+    console.log('newMarker', newMarker);
+    websocket2.send(JSON.stringify(newMarker));
+
+}
+
+var websocket2 = new WebSocket("ws://" + document.location.host + document.location.pathname + "newmarkerendpoint");
+
+websocket2.onerror = function(evt) {
+    console.log('websocket2 onError', evt.data);
+};
+
+websocket2.onmessage = function(evt) {
+    console.log('websocket2 onMessage', evt.data);
+    var json = JSON.parse(evt.data);
+    console.log('lnglattttt', json.lng, json.lat);
+    
+    createMarker(json.lng, json.lat, false);
+    
+};
+
+// function sendText(json) {
+//     console.log('websocket2 sendText', json);
+// }

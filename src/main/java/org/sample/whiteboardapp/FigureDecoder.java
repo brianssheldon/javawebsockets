@@ -20,6 +20,7 @@ public class FigureDecoder implements Decoder.Text<Figure> {
     @SuppressWarnings("CallToPrintStackTrace")
     public boolean willDecode(String string) {
         try {
+            System.out.println("willDecode" + string);
             Json.createReader(new StringReader(string)).readObject();
             return true;
         } catch (JsonException ex) {
