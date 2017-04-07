@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -39,6 +41,12 @@ public class NewMarker {
     @OnOpen
     public void onOpen(Session peer) {
         peers.add(peer);
+        try {
+            System.out.println("sending markers onOpen");
+            peer.getBasicRemote().sendObject(markers);
+        } catch (IOException | EncodeException ex) {
+            Logger.getLogger(NewMarker.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @OnClose
