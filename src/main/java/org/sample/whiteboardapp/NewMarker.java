@@ -19,7 +19,7 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/newmarkerendpoint", encoders = {FigureEncoder.class}, decoders = {FigureDecoder.class})
 public class NewMarker {
     
-    List markers = new ArrayList();
+    private static List markers = new ArrayList();
 
     private static Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
 
@@ -42,7 +42,7 @@ public class NewMarker {
     public void onOpen(Session peer) {
         peers.add(peer);
         try {
-            System.out.println("sending markers onOpen");
+            System.out.println("sending markers onOpen " + markers.size());
             peer.getBasicRemote().sendObject(markers);
         } catch (IOException | EncodeException ex) {
             Logger.getLogger(NewMarker.class.getName()).log(Level.SEVERE, null, ex);

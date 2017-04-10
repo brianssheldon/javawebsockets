@@ -55,23 +55,29 @@ $(document).ready(function() {
         }
         // console.log(map.getZoom());
     });
+    
     map.addControl(new mapboxgl.NavigationControl());
     map.addControl(new mapboxgl.ScaleControl({
         position: 'bottom-right',
         maxWidth: 80,
         unit: 'imperial'
     }));
+    
     var navigationHtml =
         '<button class="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate" type="button" onclick="flytolocation()" accesskey="h"' +
         ' title="Reset map back to original view. Hot key: <alt> h"><span class="arrow";"></span></button>';
     // adds a navigation button that resets the view back to where it started
     $('.mapboxgl-ctrl-group').append(navigationHtml);
+    
+    map.on('load', function() {
+        doWebSocket();
+    });
 });
 
 function createMarker(lng, lat, sendWS) {
+    if(!lng || !lat) return;
     console.log('createMarker', lat, lng);
     let marker = getGeoJsonForMarker(lng, lat);
-    console.log('marker', marker);
     let randomImg = 'images/a' + Math.floor((Math.random() * 8) + 1) + '.gif';
     // create a DOM element for the marker
     var el = document.createElement('div');
@@ -176,21 +182,29 @@ function sendNewMarkerToServer(lng, lat, kounter) {
 
 }
 
-var websocket2 = new WebSocket("ws://" + document.location.host + document.location.pathname + "newmarkerendpoint");
+var websocket2;
 
-websocket2.onerror = function(evt) {
-    console.log('websocket2 onError', evt.data);
-};
+function doWebSocket(){
+    websocket2 = new WebSocket("ws://" + document.location.host + document.location.pathname + "newmarkerendpoint");
 
-websocket2.onmessage = function(evt) {
-    console.log('websocket2 onMessage', evt.data);
-    var json = JSON.parse(evt.data);
-    console.log('lnglattttt', json.lng, json.lat);
-    
-    createMarker(json.lng, json.lat, false);
-    
-};
+    websocket2.onerror = function(evt) {
+        console.log('websocket2 onError', evt.data);
+    };
 
-// function sendText(json) {
-//     console.log('websocket2 sendText', json);
-// }
+    websocket2.onmessage = function(evt) {
+        console.log('websocket2 onMessage', evt.data);
+        var json = JSON.parse(evt.data);
+        console.log('json',json);
+
+        if(json.lng && json.lat){
+            console.log('lnglattttt', json.lng, json.lat);
+
+            createMarker(json.lng, json.lat, false);
+        }else{
+            for(var i = 0; i < json.length; i++){
+                createMarker(json[i].lng, json[i].lat, false);
+            }
+        }
+
+    };
+}
