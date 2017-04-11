@@ -31,7 +31,6 @@ public class NewMarker {
         System.out.println("xx markers: " + markers);
         
         for (Session peer : peers) {
-            System.out.println("in loop " + peer);
             if (!peer.equals(session)) {
                 peer.getBasicRemote().sendObject(figure);
             }

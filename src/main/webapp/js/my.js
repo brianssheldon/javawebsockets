@@ -105,9 +105,15 @@ function createMarker(lng, lat, sendWS) {
         .addTo(map));
     $('#markerId_' + kounter).append(
         '<div class="markerLabel" id="markerLabel_' + kounter + '">' + kounter + '</div>');
+
     $('#markerId_' + kounter).mouseup(function(a, b, c) {
-        console.log('mouseup on markderId_' + kounter);
+        console.log('aaa', a);
+        console.log('bbb', b);
+        console.log('ccc', c);
+        console.log('mouseup on markderId_' + kounter + '    ' + a.originalEvent.which);
+        
     });
+    
     // $('#markerLabel_' + kounter).mouseup(function(a, b, c) {
     //     console.log('mouseup on markerLabel_' + kounter);
     // });
