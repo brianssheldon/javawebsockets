@@ -50,6 +50,7 @@ public class NewMarker {
 
     @OnClose
     public void onClose(Session peer) {
+        System.err.println("onClose " + peer);
         peers.remove(peer);
     }
 
