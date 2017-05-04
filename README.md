@@ -3,6 +3,19 @@ Playing with javax.websockets - java server emits, browser client receives
 
 <strong>Stick a fork in the websocket, it's done<strong>
 
+Stick a fork in the websocket, it's done.
+
+tl;dr; javax.websocket, mapbox-gl.js, and sqlite-jdbc
+
+I've wanted to make an app in the cloud (aka someone else's server) that uses several technologies.
+This is an indolent walk through of what I've come up with so far.
+
+The list of technology I plan on using is, javax.websocket, json, javascript, mapbox-gl.js (vector tile map), sqlite-jdbc, and Rest.
+If there is time, deploy it to gcloud (App Engine). I may have to use mapbox.com or node.js to serve the map tiles instead of sqlite-jdbc if I don't have time.
+
+My plan is to display a map of the world, click on the map to create a marker which then gets broadcast to anyone else on the web page.
+Clicking on a marker deletes it from everyones map.
+---
 
 Push data to clients - alert 
 Java websockets
