@@ -1,7 +1,7 @@
 # javawebsockets
 Playing with javax.websockets - java server emits, browser client receives
 
-<strong>Stick a fork in the websocket, it's done<strong>
+<strong>Stick a fork in the websocket, it's done</strong>
 
 Stick a fork in the websocket, it's done.
 
