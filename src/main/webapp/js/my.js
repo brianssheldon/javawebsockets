@@ -74,11 +74,13 @@ $(document).ready(function() {
     });
 });
 
-function createMarker(lng, lat, sendWS) {
+function createMarker(lng, lat, sendWS, randomImg) {
     if(!lng || !lat) return;
     console.log('createMarker', lat, lng);
     let marker = getGeoJsonForMarker(lng, lat);
-    let randomImg = 'images/a' + Math.floor((Math.random() * 8) + 1) + '.gif';
+    if(!randomImg){
+        randomImg = 'images/a' + Math.floor((Math.random() * 8) + 1) + '.gif';
+    }
     // create a DOM element for the marker
     var el = document.createElement('div');
     el.className = 'marker';
@@ -106,12 +108,11 @@ function createMarker(lng, lat, sendWS) {
     $('#markerId_' + kounter).append(
         '<div class="markerLabel" id="markerLabel_' + kounter + '">' + kounter + '</div>');
 
-    $('#markerId_' + kounter).mouseup(function(a, b, c) {
-        console.log('aaa', a);
-        console.log('bbb', b);
-        console.log('ccc', c);
-        console.log('mouseup on markderId_' + kounter + '    ' + a.originalEvent.which);
-        
+    $('#markerId_' + kounter).mouseup(function(evt) {
+        console.log('evt', evt);
+        console.log('mouseup on markderId_' + kounter + '    ' + evt.originalEvent.which + '   '+ kounter);
+        dragAndDropped = true;
+        $('#' + evt.target.id).remove();
     });
     
     // $('#markerLabel_' + kounter).mouseup(function(a, b, c) {
@@ -119,7 +120,7 @@ function createMarker(lng, lat, sendWS) {
     // });
     closePopup();
     if(sendWS){
-        sendNewMarkerToServer(lng, lat, kounter);
+        sendNewMarkerToServer(lng, lat, kounter, randomImg);
     }
     kounter++;
 }
@@ -175,12 +176,13 @@ function flytolocation() {
     });
 }
 
-function sendNewMarkerToServer(lng, lat, kounter) {
+function sendNewMarkerToServer(lng, lat, kounter, randomImg) {
 
     let newMarker = {
         id: kounter,
         lng: lng,
-        lat: lat
+        lat: lat,
+        randomImg
     };
 
     console.log('newMarker', newMarker);
@@ -205,10 +207,10 @@ function doWebSocket(){
         if(json.lng && json.lat){
             console.log('lnglattttt', json.lng, json.lat);
 
-            createMarker(json.lng, json.lat, false);
+            createMarker(json.lng, json.lat, false, json.randomImg);
         }else{
             for(var i = 0; i < json.length; i++){
-                createMarker(json[i].lng, json[i].lat, false);
+                createMarker(json[i].lng, json[i].lat, false, json[i].randomImg);
             }
         }
 
