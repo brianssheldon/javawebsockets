@@ -54,4 +54,6 @@ Sqlite tutorial  http://www.sqlitetutorial.net/sqlite-java/select/
 Buttons -
      Trigger websocket msgs
       Store lnglat/bearing/pitch
+      
+      random flow rate with updates...
        
