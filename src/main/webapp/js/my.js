@@ -88,6 +88,7 @@ function createMarker(lng, lat, sendWS, randomImg) {
     el.style.backgroundImage = 'url(' + randomImg + ')';
     el.style.width = '50px';
     el.style.height = '50px';
+    
     // el.addEventListener('click', function() {
     //     // window.alert(marker.properties.message);
     //     console.log('click', this);
@@ -110,9 +111,33 @@ function createMarker(lng, lat, sendWS, randomImg) {
 
     $('#markerId_' + kounter).mouseup(function(evt) {
         console.log('evt', evt);
-        console.log('mouseup on markderId_' + kounter + '    ' + evt.originalEvent.which + '   '+ kounter);
+//        console.log('mouseup on markderId_' + kounter + '    ' + evt.originalEvent.which + '   '+ kounter);
         dragAndDropped = true;
-        $('#' + evt.target.id).remove();
+        console.log('------ current target id', evt.currentTarget.id);
+//        $('#' + evt.target.id).remove();
+//        $('#' + evt.currentTarget.id).remove();\
+        console.log('markers', markers);
+
+        for(var i = 0;i < markers.length; i++){
+            if(evt.currentTarget.id === markers[i]._element.id){
+                console.log('marker',i, markers[i]._element.id);
+                console.log('lnglat', markers[i]._lngLat);
+                
+                let newMarker = {
+                    id: -1,
+                    lng: markers[i]._lngLat.lng,
+                    lat: markers[i]._lngLat.lat
+                };
+
+                console.log('send delete Marker', newMarker);
+                websocket2.send(JSON.stringify(newMarker));
+            }
+            
+        }
+        
+        
+        this.remove();
+           
     });
     
     // $('#markerLabel_' + kounter).mouseup(function(a, b, c) {

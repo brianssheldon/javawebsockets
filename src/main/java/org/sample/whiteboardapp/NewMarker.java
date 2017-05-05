@@ -26,7 +26,15 @@ public class NewMarker {
     @OnMessage
     public void broadcastFigure(Figure figure, Session session) throws IOException, EncodeException {
         
-        System.out.println("xxxx broadcastFigure: " + figure);
+//        SqliteReader sr = new SqliteReader();
+//        sr.getTile(10, 234, 403);
+        
+        System.out.println("xxxx broadcastFigure: " + figure.getJson().getInt("id"));
+        
+        if(figure.getJson().getInt("id") == -1){
+//            xxxx broadcastFigure: {"id":-1,"lng":-97.63289036390321,"lat":35.580609327321426}
+            System.out.println("delete received" + figure.getJson().getJsonNumber("lng") + "  " + figure.getJson().getJsonNumber("lat"));
+        }
         markers.add(figure);
         System.out.println("xx markers: " + markers);
         
