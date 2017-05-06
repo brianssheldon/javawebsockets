@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -28,22 +27,13 @@ public class NewMarker {
     @OnMessage
     public void broadcastFigure(Figure figure, Session session) throws IOException, EncodeException {
         
-//        SqliteReader sr = new SqliteReader();
-//        sr.getTile(10, 234, 403);
         JsonObject jo = figure.getJson();
         
         System.out.println("xxxx broadcastFigure: " + figure.getJson().getInt("id"));
         
         if(figure.getJson().getInt("id") == -1){
-//            xxxx broadcastFigure: {"id":-1,"lng":-97.63289036390321,"lat":35.580609327321426}
-            System.out.println("delete received" + figure.getJson().getJsonNumber("lng") + "  " + figure.getJson().getJsonNumber("lat"));
             
             for(int i =0; i < markers.size(); i++){
-                
-//                System.out.println("marker " + i + " " + markers.get(i));
-//                
-//                System.out.println("stuff" + markers.get(i).getJson().getJsonNumber("lng") + "  " + figure.getJson().getJsonNumber("lng")  + "  " +
-//                 markers.get(i).getJson().getJsonNumber("lat") + "    " +  figure.getJson().getJsonNumber("lat"));
                 
                 if(markers.get(i).getJson().getJsonNumber("lng").equals(figure.getJson().getJsonNumber("lng")) 
                 && markers.get(i).getJson().getJsonNumber("lat").equals(figure.getJson().getJsonNumber("lat"))){
@@ -58,7 +48,6 @@ public class NewMarker {
                         }
                     }
                     markers.remove(i);
-                    
                 }
             }
         }else{        
