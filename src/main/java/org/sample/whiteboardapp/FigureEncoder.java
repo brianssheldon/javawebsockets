@@ -20,5 +20,4 @@ public class FigureEncoder implements Encoder.Text<Figure> {
     public void destroy() {
         System.out.println("destroy");
     }
-
 }

@@ -52,7 +52,7 @@ public class NewMarker {
             }
         }else{        
             markers.add(figure);
-            System.out.println("xx markers: " + markers);
+            System.out.println("emitting markers: " + markers);
             for (Session peer : peers) {
                 if (!peer.equals(session)) {
                     peer.getBasicRemote().sendObject(figure);
@@ -66,7 +66,7 @@ public class NewMarker {
     public void onOpen(Session peer) {
         peers.add(peer);
         try {
-            System.out.println("sending markers onOpen " + markers.size());
+            System.out.println("sending all markers onOpen " + markers.size());
             peer.getBasicRemote().sendObject(markers);
         } catch (IOException | EncodeException ex) {
             Logger.getLogger(NewMarker.class.getName()).log(Level.SEVERE, null, ex);

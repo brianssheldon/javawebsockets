@@ -27,7 +27,6 @@ public class FigureDecoder implements Decoder.Text<Figure> {
             ex.printStackTrace();
             return false;
         }
-
     }
 
     @Override
