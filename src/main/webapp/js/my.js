@@ -266,6 +266,18 @@ function doWebSocket() {
     };
 }
 
-function clickMeButtonClicked(){
+function clickMeButtonClicked() {
     console.log('clickMeButtonClicked');
+    $.get("/javawebsockets/resources/greeting", function() {
+            console.log("success");
+        })
+        .done(function(a,b,c) {
+          console.log(a,b,c);
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            console.log("finished");
+        });
 }

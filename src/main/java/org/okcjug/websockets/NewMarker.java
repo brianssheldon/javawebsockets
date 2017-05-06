@@ -19,26 +19,25 @@ import javax.websocket.server.ServerEndpoint;
 
 @ServerEndpoint(value = "/newmarkerendpoint", encoders = {FigureEncoder.class}, decoders = {FigureDecoder.class})
 public class NewMarker {
-    
+
     private static List<Figure> markers = new ArrayList();
 
     private static Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
 
     @OnMessage
     public void broadcastFigure(Figure figure, Session session) throws IOException, EncodeException {
-        
+
         JsonObject jo = figure.getJson();
-        
-        System.out.println("xxxx broadcastFigure: " + figure.getJson().getInt("id"));
-        
-        if(figure.getJson().getInt("id") == -1){
-            
-            for(int i =0; i < markers.size(); i++){
-                
-                if(markers.get(i).getJson().getJsonNumber("lng").equals(figure.getJson().getJsonNumber("lng")) 
-                && markers.get(i).getJson().getJsonNumber("lat").equals(figure.getJson().getJsonNumber("lat"))){
-                    
-                    
+
+        System.out.println("xxxx broadcastFigure: " + jo.getInt("id"));
+
+        if (jo.getInt("id") == -1) {
+
+            for (int i = 0; i < markers.size(); i++) {
+
+                if (markers.get(i).getJson().getJsonNumber("lng").equals(jo.getJsonNumber("lng"))
+                        && markers.get(i).getJson().getJsonNumber("lat").equals(jo.getJsonNumber("lat"))) {
+
                     for (Session peer : peers) {
                         if (!peer.equals(session)) {
                             System.out.println("sending delete " + jo);
@@ -49,7 +48,7 @@ public class NewMarker {
                     markers.remove(i);
                 }
             }
-        }else{        
+        } else {
             markers.add(figure);
             System.out.println("emitting markers: " + markers);
             for (Session peer : peers) {
@@ -58,7 +57,6 @@ public class NewMarker {
                 }
             }
         }
-        
     }
 
     @OnOpen
