@@ -13,11 +13,11 @@ $(document).ready(function() {
         center: lonlat, // starting position
         zoom: 11 // starting zoom
     });
-    
+
     map.on('rotate', function(e) {
         dragAndDropped = true;
     });
-    
+
     map.on('drag', function(e) {
         dragAndDropped = true;
     });
@@ -264,4 +264,8 @@ function doWebSocket() {
         }
 
     };
+}
+
+function clickMeButtonClicked(){
+    console.log('clickMeButtonClicked');
 }
