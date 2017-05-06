@@ -89,16 +89,6 @@ function createMarker(lng, lat, sendWS, randomImg) {
     el.style.width = '50px';
     el.style.height = '50px';
 
-    // el.addEventListener('click', function() {
-    //     // window.alert(marker.properties.message);
-    //     console.log('click', this);
-    // });
-
-    // var popup = new mapboxgl.Popup({
-    //         offset: 25
-    //     })
-    //     .setText('-' + kounter);
-
     // add marker to map
     let mkr = markers.push(new mapboxgl.Marker(el, {
             offset: [-25, -25]
@@ -111,18 +101,10 @@ function createMarker(lng, lat, sendWS, randomImg) {
         '<div class="markerLabel" id="markerLabel_' + kounter + '">' + kounter + '</div>');
 
     $('#markerId_' + kounter).mouseup(function(evt) {
-        console.log('evt', evt);
-        //        console.log('mouseup on markderId_' + kounter + '    ' + evt.originalEvent.which + '   '+ kounter);
         dragAndDropped = true;
-        console.log('------ current target id', evt.currentTarget.id);
-        //        $('#' + evt.target.id).remove();
-        //        $('#' + evt.currentTarget.id).remove();\
-        console.log('markers', markers);
 
         for (var i = 0; i < markers.length; i++) {
             if (evt.currentTarget.id === markers[i]._element.id) {
-                console.log('marker', i, markers[i]._element.id);
-                console.log('lnglat', markers[i]._lngLat);
 
                 let newMarker = {
                     id: -1,
@@ -130,27 +112,22 @@ function createMarker(lng, lat, sendWS, randomImg) {
                     lat: markers[i]._lngLat.lat
                 };
 
-                console.log('send delete Marker', newMarker);
                 websocket2.send(JSON.stringify(newMarker));
                 markers.splice(i, 1);
+                setView();
+                setView();
             }
-
         }
-
 
         this.remove();
 
         setView();
     });
 
-    // $('#markerLabel_' + kounter).mouseup(function(a, b, c) {
-    //     console.log('mouseup on markerLabel_' + kounter);
-    // });
     closePopup();
     if (sendWS) {
         sendNewMarkerToServer(lng, lat, kounter, randomImg);
     }
-
 
     setView();
     kounter++;
@@ -188,15 +165,18 @@ function makePopupPicker(e) {
     if (x > 150) x = x - 150;
     let theHtml = '';
     theHtml += "<div id='popupmain' class='popupmain' ";
-    theHtml += " style='left: " + x + "px; top: " + e.point.y + "px;'>";
+    theHtml += "style='left: " + x + "px; top: " + e.point.y + "px;'>";
     theHtml += "<button class='buttonx' onclick='createMarker(" + lng + "," + lat + ", true)'>Add Marker</button>"
     theHtml += "<button class='buttonx' onclick='closePopup()'>Close</button>"
     theHtml += "<br></div>";
     $('#popup').append(theHtml);
 }
 
-
 function flytolocation() {
+    if (markers && markers.length > 0) {
+        setView();
+        return;
+    }
 
     map.flyTo({
         center: lonlat,
@@ -208,18 +188,24 @@ function flytolocation() {
 
 function setView() {
 
+    if (!markers || markers.length === 0) {
+        flytolocation();
+        return;
+    }
+
     var neLon = -180;
     var neLat = 0;
     var swLon = 180;
     var swLat = 90;
 
     $.each(markers, function(index, value) {
-        console.log('value', value);
         if (value._lngLat.lng > neLon) neLon = value._lngLat.lng;
         if (value._lngLat.lng < swLon) swLon = value._lngLat.lng;
         if (value._lngLat.lat > neLat) neLat = value._lngLat.lat;
         if (value._lngLat.lat < swLat) swLat = value._lngLat.lat;
     });
+
+    console.log('setView after each', swLon, swLat, neLon, neLat);
 
     map.fitBounds([
         [
@@ -253,7 +239,7 @@ function sendNewMarkerToServer(lng, lat, kounter, randomImg) {
 var websocket2;
 
 function doWebSocket() {
-    System.out.printlin("uri " + "ws://" + document.location.host + document.location.pathname + "newmarkerendpoint");
+    console.log("uri " + "ws://" + document.location.host + document.location.pathname + "newmarkerendpoint");
 
     websocket2 = new WebSocket("ws://" + document.location.host + document.location.pathname + "newmarkerendpoint");
 
@@ -268,11 +254,20 @@ function doWebSocket() {
 
         if (json.id === -1) {
             console.log('delete received ', json);
-            var deleteme = markers.filter(marker => {
-                return json.lat === marker._lngLat.lat && json.lng === marker._lngLat.lng;
-            });
-            console.log('found it ', deleteme);
-            deleteme[0].remove();
+
+            for (var i = 0; i < markers.length; i++) {
+                if (json.lat === markers[i]._lngLat.lat && json.lng === markers[i]._lngLat.lng) {
+                    console.log('found it ', markers[i]);
+                    markers[i].remove();
+                    markers.splice(i, 1);
+                }
+            }
+
+            // var deleteme = markers.filter(marker => {
+            //     return json.lat === marker._lngLat.lat && json.lng === marker._lngLat.lng;
+            // });
+            // console.log('found it ', deleteme);
+            // deleteme[0].remove();
             setView();
         } else if (json.lng && json.lat) {
             console.log('lnglattttt', json.lng, json.lat);

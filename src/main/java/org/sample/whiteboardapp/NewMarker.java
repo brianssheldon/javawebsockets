@@ -81,6 +81,6 @@ public class NewMarker {
 
     @OnError
     public void onError(Throwable t) {
-        System.out.println("NewMarker endpoint error" + t);
+        System.out.println("NewMarker endpoint error " + t);
     }
 }
