@@ -1,4 +1,4 @@
-package org.sample.whiteboardapp;
+package org.okcjug.websockets;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +38,6 @@ public class NewMarker {
                 if(markers.get(i).getJson().getJsonNumber("lng").equals(figure.getJson().getJsonNumber("lng")) 
                 && markers.get(i).getJson().getJsonNumber("lat").equals(figure.getJson().getJsonNumber("lat"))){
                     
-//                    jo.put("deleteme", JsonValue.TRUE);
                     
                     for (Session peer : peers) {
                         if (!peer.equals(session)) {

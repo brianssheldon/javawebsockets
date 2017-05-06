@@ -11,32 +11,16 @@ $(document).ready(function() {
         container: 'map', // container id
         style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
         center: lonlat, // starting position
-        zoom: 10.14 // starting zoom
+        zoom: 11 // starting zoom
     });
+    
     map.on('rotate', function(e) {
         dragAndDropped = true;
     });
+    
     map.on('drag', function(e) {
         dragAndDropped = true;
     });
-    // map.on('mouseup', function(e) {
-    //     closePopup();
-    //     if (dragAndDropped) {
-    //         dragAndDropped = false;
-    //         // console.log('bailing');
-    //         return;
-    //     }
-    //
-    //     console.log('mouseup',e.originalEvent.which);
-    //
-    //     if (e.originalEvent.which == 1) { // left click
-    //         console.log('calling createMarker', e.lngLat.lng, e.lngLat.lat);
-    //         createMarker(e.lngLat.lng, e.lngLat.lat);
-    //     } else { // not left click
-    //         makePopupPicker(e);
-    //     }
-    //     // console.log(map.getZoom());
-    // });
 
     map.on('mouseup', function(e) {
         closePopup();

@@ -1,4 +1,4 @@
-package org.sample.whiteboardapp;
+package org.okcjug.websockets;
 
 import java.io.StringWriter;
 import javax.json.Json;
