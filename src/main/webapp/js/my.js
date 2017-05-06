@@ -253,6 +253,8 @@ function sendNewMarkerToServer(lng, lat, kounter, randomImg) {
 var websocket2;
 
 function doWebSocket() {
+    System.out.printlin("uri " + "ws://" + document.location.host + document.location.pathname + "newmarkerendpoint");
+
     websocket2 = new WebSocket("ws://" + document.location.host + document.location.pathname + "newmarkerendpoint");
 
     websocket2.onerror = function(evt) {
