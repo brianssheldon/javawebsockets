@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -19,7 +21,7 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/newmarkerendpoint", encoders = {FigureEncoder.class}, decoders = {FigureDecoder.class})
 public class NewMarker {
     
-    private static List markers = new ArrayList();
+    private static List<Figure> markers = new ArrayList();
 
     private static Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
 
@@ -28,21 +30,47 @@ public class NewMarker {
         
 //        SqliteReader sr = new SqliteReader();
 //        sr.getTile(10, 234, 403);
+        JsonObject jo = figure.getJson();
         
         System.out.println("xxxx broadcastFigure: " + figure.getJson().getInt("id"));
         
         if(figure.getJson().getInt("id") == -1){
 //            xxxx broadcastFigure: {"id":-1,"lng":-97.63289036390321,"lat":35.580609327321426}
             System.out.println("delete received" + figure.getJson().getJsonNumber("lng") + "  " + figure.getJson().getJsonNumber("lat"));
-        }
-        markers.add(figure);
-        System.out.println("xx markers: " + markers);
-        
-        for (Session peer : peers) {
-            if (!peer.equals(session)) {
-                peer.getBasicRemote().sendObject(figure);
+            
+            for(int i =0; i < markers.size(); i++){
+                
+//                System.out.println("marker " + i + " " + markers.get(i));
+//                
+//                System.out.println("stuff" + markers.get(i).getJson().getJsonNumber("lng") + "  " + figure.getJson().getJsonNumber("lng")  + "  " +
+//                 markers.get(i).getJson().getJsonNumber("lat") + "    " +  figure.getJson().getJsonNumber("lat"));
+                
+                if(markers.get(i).getJson().getJsonNumber("lng").equals(figure.getJson().getJsonNumber("lng")) 
+                && markers.get(i).getJson().getJsonNumber("lat").equals(figure.getJson().getJsonNumber("lat"))){
+                    
+//                    jo.put("deleteme", JsonValue.TRUE);
+                    
+                    for (Session peer : peers) {
+                        if (!peer.equals(session)) {
+                            System.out.println("sending delete " + jo);
+                            figure.setJson(jo);
+                            peer.getBasicRemote().sendObject(figure);
+                        }
+                    }
+                    markers.remove(i);
+                    
+                }
+            }
+        }else{        
+            markers.add(figure);
+            System.out.println("xx markers: " + markers);
+            for (Session peer : peers) {
+                if (!peer.equals(session)) {
+                    peer.getBasicRemote().sendObject(figure);
+                }
             }
         }
+        
     }
 
     @OnOpen

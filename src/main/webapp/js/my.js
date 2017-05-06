@@ -55,30 +55,30 @@ $(document).ready(function() {
         }
         // console.log(map.getZoom());
     });
-    
+
     map.addControl(new mapboxgl.NavigationControl());
     map.addControl(new mapboxgl.ScaleControl({
         position: 'bottom-right',
         maxWidth: 80,
         unit: 'imperial'
     }));
-    
+
     var navigationHtml =
         '<button class="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate" type="button" onclick="flytolocation()" accesskey="h"' +
         ' title="Reset map back to original view. Hot key: <alt> h"><span class="arrow";"></span></button>';
     // adds a navigation button that resets the view back to where it started
     $('.mapboxgl-ctrl-group').append(navigationHtml);
-    
+
     map.on('load', function() {
         doWebSocket();
     });
 });
 
 function createMarker(lng, lat, sendWS, randomImg) {
-    if(!lng || !lat) return;
+    if (!lng || !lat) return;
     console.log('createMarker', lat, lng);
     let marker = getGeoJsonForMarker(lng, lat);
-    if(!randomImg){
+    if (!randomImg) {
         randomImg = 'images/a' + Math.floor((Math.random() * 8) + 1) + '.gif';
     }
     // create a DOM element for the marker
@@ -88,7 +88,7 @@ function createMarker(lng, lat, sendWS, randomImg) {
     el.style.backgroundImage = 'url(' + randomImg + ')';
     el.style.width = '50px';
     el.style.height = '50px';
-    
+
     // el.addEventListener('click', function() {
     //     // window.alert(marker.properties.message);
     //     console.log('click', this);
@@ -106,23 +106,24 @@ function createMarker(lng, lat, sendWS, randomImg) {
         .setLngLat([lng, lat])
         // .setPopup(popup)
         .addTo(map));
+
     $('#markerId_' + kounter).append(
         '<div class="markerLabel" id="markerLabel_' + kounter + '">' + kounter + '</div>');
 
     $('#markerId_' + kounter).mouseup(function(evt) {
         console.log('evt', evt);
-//        console.log('mouseup on markderId_' + kounter + '    ' + evt.originalEvent.which + '   '+ kounter);
+        //        console.log('mouseup on markderId_' + kounter + '    ' + evt.originalEvent.which + '   '+ kounter);
         dragAndDropped = true;
         console.log('------ current target id', evt.currentTarget.id);
-//        $('#' + evt.target.id).remove();
-//        $('#' + evt.currentTarget.id).remove();\
+        //        $('#' + evt.target.id).remove();
+        //        $('#' + evt.currentTarget.id).remove();\
         console.log('markers', markers);
 
-        for(var i = 0;i < markers.length; i++){
-            if(evt.currentTarget.id === markers[i]._element.id){
-                console.log('marker',i, markers[i]._element.id);
+        for (var i = 0; i < markers.length; i++) {
+            if (evt.currentTarget.id === markers[i]._element.id) {
+                console.log('marker', i, markers[i]._element.id);
                 console.log('lnglat', markers[i]._lngLat);
-                
+
                 let newMarker = {
                     id: -1,
                     lng: markers[i]._lngLat.lng,
@@ -131,22 +132,27 @@ function createMarker(lng, lat, sendWS, randomImg) {
 
                 console.log('send delete Marker', newMarker);
                 websocket2.send(JSON.stringify(newMarker));
+                markers.splice(i, 1);
             }
-            
+
         }
-        
-        
+
+
         this.remove();
-           
+
+        setView();
     });
-    
+
     // $('#markerLabel_' + kounter).mouseup(function(a, b, c) {
     //     console.log('mouseup on markerLabel_' + kounter);
     // });
     closePopup();
-    if(sendWS){
+    if (sendWS) {
         sendNewMarkerToServer(lng, lat, kounter, randomImg);
     }
+
+
+    setView();
     kounter++;
 }
 
@@ -183,7 +189,6 @@ function makePopupPicker(e) {
     let theHtml = '';
     theHtml += "<div id='popupmain' class='popupmain' ";
     theHtml += " style='left: " + x + "px; top: " + e.point.y + "px;'>";
-    // theHtml += '<div class="sometext">some text goes here</div>';
     theHtml += "<button class='buttonx' onclick='createMarker(" + lng + "," + lat + ", true)'>Add Marker</button>"
     theHtml += "<button class='buttonx' onclick='closePopup()'>Close</button>"
     theHtml += "<br></div>";
@@ -198,6 +203,36 @@ function flytolocation() {
         pitch: 0,
         bearing: 0,
         zoom: 10.14
+    });
+}
+
+function setView() {
+
+    var neLon = -180;
+    var neLat = 0;
+    var swLon = 180;
+    var swLat = 90;
+
+    $.each(markers, function(index, value) {
+        console.log('value', value);
+        if (value._lngLat.lng > neLon) neLon = value._lngLat.lng;
+        if (value._lngLat.lng < swLon) swLon = value._lngLat.lng;
+        if (value._lngLat.lat > neLat) neLat = value._lngLat.lat;
+        if (value._lngLat.lat < swLat) swLat = value._lngLat.lat;
+    });
+
+    map.fitBounds([
+        [
+            swLon, swLat
+        ],
+        [
+            neLon, neLat
+        ]
+    ], {
+        maxZoom: 12,
+        linear: true,
+        padding: 130,
+        pitch: 0
     });
 }
 
@@ -217,7 +252,7 @@ function sendNewMarkerToServer(lng, lat, kounter, randomImg) {
 
 var websocket2;
 
-function doWebSocket(){
+function doWebSocket() {
     websocket2 = new WebSocket("ws://" + document.location.host + document.location.pathname + "newmarkerendpoint");
 
     websocket2.onerror = function(evt) {
@@ -227,14 +262,22 @@ function doWebSocket(){
     websocket2.onmessage = function(evt) {
         console.log('websocket2 onMessage', evt.data);
         var json = JSON.parse(evt.data);
-        console.log('json',json);
+        console.log('json', json);
 
-        if(json.lng && json.lat){
+        if (json.id === -1) {
+            console.log('delete received ', json);
+            var deleteme = markers.filter(marker => {
+                return json.lat === marker._lngLat.lat && json.lng === marker._lngLat.lng;
+            });
+            console.log('found it ', deleteme);
+            deleteme[0].remove();
+            setView();
+        } else if (json.lng && json.lat) {
             console.log('lnglattttt', json.lng, json.lat);
 
             createMarker(json.lng, json.lat, false, json.randomImg);
-        }else{
-            for(var i = 0; i < json.length; i++){
+        } else {
+            for (var i = 0; i < json.length; i++) {
                 createMarker(json[i].lng, json[i].lat, false, json[i].randomImg);
             }
         }
