@@ -29,8 +29,6 @@ public class NewMarker {
 
         JsonObject jo = thebean.getJson();
 
-        System.out.println("xxxx broadcastFigure: " + jo.getInt("id"));
-
         if (jo.getInt("id") == -1) {
 
             for (int i = 0; i < markers.size(); i++) {

@@ -32,7 +32,7 @@ $(document).ready(function () {
         }
 
         console.log('clickkkk', e.originalEvent.which);
-        if (e.originalEvent.which != 1) { // not left click
+        if (e.originalEvent.which !== 1) { // not left click
             // createMarker(e.lngLat.lng, e.lngLat.lat);
         } else { // not left click
             console.log('calling makePopupPicker', e.lngLat.lng, e.lngLat.lat);
@@ -55,6 +55,7 @@ $(document).ready(function () {
     $('.mapboxgl-ctrl-group').append(navigationHtml);
 
     map.on('load', function () {
+        // the map is 'done' loading
         doWebSocket();
     });
 });
@@ -62,6 +63,7 @@ $(document).ready(function () {
 function createMarker(lng, lat, sendWS, randomImg) {
     if (!lng || !lat)
         return;
+    
     console.log('createMarker', lat, lng);
     let marker = getGeoJsonForMarker(lng, lat);
     if (!randomImg) {
@@ -107,16 +109,11 @@ function createMarker(lng, lat, sendWS, randomImg) {
     });
 
     closePopup();
-    if (sendWS) {
-        sendNewMarkerToServer(lng, lat, kounter, randomImg);
-    }
-
     setView();
     kounter++;
 }
 
 function getGeoJsonForMarker(lng, lat) {
-    console.log('lng', lng, 'lat', lat);
     var geojson = {
         "type": "FeatureCollection",
         "features": [{
@@ -204,17 +201,4 @@ function setView() {
         padding: 130,
         pitch: 0
     });
-}
-
-function sendNewMarkerToServer(lng, lat, kounter, randomImg) {
-
-    let newMarker = {
-        id: kounter,
-        lng: lng,
-        lat: lat,
-        randomImg
-    };
-
-    console.log('newMarker', newMarker);
-    websocket2.send(JSON.stringify(newMarker));
 }
