@@ -8,12 +8,12 @@ import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
-public class FigureDecoder implements Decoder.Text<Figure> {
+public class MyJsonBeanDecoder implements Decoder.Text<MyJsonBean> {
 
     @Override
-    public Figure decode(String string) throws DecodeException {
+    public MyJsonBean decode(String string) throws DecodeException {
         JsonObject jsonObject = Json.createReader(new StringReader(string)).readObject();
-        return new Figure(jsonObject);
+        return new MyJsonBean(jsonObject);
     }
 
     @Override

@@ -4,11 +4,11 @@ import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 
-public class FigureEncoder implements Encoder.Text<Figure> {
+public class MyJsonBeanEncoder implements Encoder.Text<MyJsonBean> {
 
     @Override
-    public String encode(Figure figure) throws EncodeException {
-        return figure.getJson().toString();
+    public String encode(MyJsonBean bean) throws EncodeException {
+        return bean.getJson().toString();
     }
 
     @Override

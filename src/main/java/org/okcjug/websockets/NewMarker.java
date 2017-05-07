@@ -17,15 +17,15 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint(value = "/newmarkerendpoint", encoders = {FigureEncoder.class}, decoders = {FigureDecoder.class})
+@ServerEndpoint(value = "/newmarkerendpoint", encoders = {MyJsonBeanEncoder.class}, decoders = {MyJsonBeanDecoder.class})
 public class NewMarker {
 
-    private static List<Figure> markers = new ArrayList();
+    private static List<MyJsonBean> markers = new ArrayList();
 
     private static Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
 
     @OnMessage
-    public void broadcastFigure(Figure figure, Session session) throws IOException, EncodeException {
+    public void broadcastFigure(MyJsonBean figure, Session session) throws IOException, EncodeException {
 
         JsonObject jo = figure.getJson();
 

@@ -4,13 +4,13 @@ import java.io.StringWriter;
 import javax.json.Json;
 import javax.json.JsonObject;
 
-public class Figure {
+public class MyJsonBean {
+    
+    private JsonObject json;
 
-    public Figure(JsonObject json) {
+    public MyJsonBean(JsonObject json) {
         this.json = json;
     }
-
-    private JsonObject json;
 
     public JsonObject getJson() {
         return json;
