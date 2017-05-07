@@ -1,3 +1,4 @@
+// please create an account on mapbox.com and create your own token instead of using mine
 mapboxgl.accessToken = 'pk.eyJ1Ijoib2tpZWJ1YmJhIiwiYSI6ImNpdHZscGs3ajAwNXYyb284bW4ydWUzbGsifQ.1PoNrSP0F65WolWgqKhV4g';
 var map;
 var kounter = 0;
@@ -5,7 +6,7 @@ var markers = [];
 var lonlat = [-97.50732685771766, 35.47461778676444];
 var dragAndDropped = false;
 
-$(document).ready(function() {
+$(document).ready(function () {
 
     map = new mapboxgl.Map({
         container: 'map', // container id
@@ -14,15 +15,15 @@ $(document).ready(function() {
         zoom: 11 // starting zoom
     });
 
-    map.on('rotate', function(e) {
+    map.on('rotate', function (e) {
         dragAndDropped = true;
     });
 
-    map.on('drag', function(e) {
+    map.on('drag', function (e) {
         dragAndDropped = true;
     });
 
-    map.on('mouseup', function(e) {
+    map.on('mouseup', function (e) {
         closePopup();
         if (dragAndDropped) {
             dragAndDropped = false;
@@ -48,18 +49,19 @@ $(document).ready(function() {
     }));
 
     var navigationHtml =
-        '<button class="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate" type="button" onclick="flytolocation()" accesskey="h"' +
-        ' title="Reset map back to original view. Hot key: <alt> h"><span class="arrow";"></span></button>';
+            '<button class="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate" type="button" onclick="flytolocation()" accesskey="h"' +
+            ' title="Reset map back to original view. Hot key: <alt> h"><span class="arrow";"></span></button>';
     // adds a navigation button that resets the view back to where it started
     $('.mapboxgl-ctrl-group').append(navigationHtml);
 
-    map.on('load', function() {
+    map.on('load', function () {
         doWebSocket();
     });
 });
 
 function createMarker(lng, lat, sendWS, randomImg) {
-    if (!lng || !lat) return;
+    if (!lng || !lat)
+        return;
     console.log('createMarker', lat, lng);
     let marker = getGeoJsonForMarker(lng, lat);
     if (!randomImg) {
@@ -75,16 +77,16 @@ function createMarker(lng, lat, sendWS, randomImg) {
 
     // add marker to map
     let mkr = markers.push(new mapboxgl.Marker(el, {
-            offset: [-25, -25]
-        })
-        .setLngLat([lng, lat])
-        // .setPopup(popup)
-        .addTo(map));
+        offset: [-25, -25]
+    })
+            .setLngLat([lng, lat])
+            // .setPopup(popup)
+            .addTo(map));
 
     $('#markerId_' + kounter).append(
-        '<div class="markerLabel" id="markerLabel_' + kounter + '">' + kounter + '</div>');
+            '<div class="markerLabel" id="markerLabel_' + kounter + '">' + kounter + '</div>');
 
-    $('#markerId_' + kounter).mouseup(function(evt) {
+    $('#markerId_' + kounter).mouseup(function (evt) {
         dragAndDropped = true;
 
         for (var i = 0; i < markers.length; i++) {
@@ -98,8 +100,6 @@ function createMarker(lng, lat, sendWS, randomImg) {
 
                 websocket2.send(JSON.stringify(newMarker));
                 markers.splice(i, 1);
-                setView();
-                setView();
             }
         }
 
@@ -113,6 +113,12 @@ function createMarker(lng, lat, sendWS, randomImg) {
         sendNewMarkerToServer(lng, lat, kounter, randomImg);
     }
 
+    sendNewMarkerToServerUsingRest({
+        id: kounter,
+        lng: lng,
+        lat: lat
+    });
+
     setView();
     kounter++;
 }
@@ -122,16 +128,12 @@ function getGeoJsonForMarker(lng, lat) {
     var geojson = {
         "type": "FeatureCollection",
         "features": [{
-            "type": "Feature",
-            // "properties": {
-            //     "title": "Small astronaut",
-            //     "message": "Foo"
-            // },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [lng, lat]
-            }
-        }]
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [lng, lat]
+                }
+            }]
     };
     return geojson;
 }
@@ -146,7 +148,8 @@ function makePopupPicker(e) {
     let lng = e.lngLat.lng;
     let lat = e.lngLat.lat;
     let x = e.point.x;
-    if (x > 150) x = x - 150;
+    if (x > 150)
+        x = x - 150;
     let theHtml = '';
     theHtml += "<div id='popupmain' class='popupmain' ";
     theHtml += "style='left: " + x + "px; top: " + e.point.y + "px;'>";
@@ -171,7 +174,7 @@ function flytolocation() {
 }
 
 function setView() {
-
+    console.log('setView', markers);
     if (!markers || markers.length === 0) {
         flytolocation();
         return;
@@ -182,11 +185,15 @@ function setView() {
     var swLon = 180;
     var swLat = 90;
 
-    $.each(markers, function(index, value) {
-        if (value._lngLat.lng > neLon) neLon = value._lngLat.lng;
-        if (value._lngLat.lng < swLon) swLon = value._lngLat.lng;
-        if (value._lngLat.lat > neLat) neLat = value._lngLat.lat;
-        if (value._lngLat.lat < swLat) swLat = value._lngLat.lat;
+    $.each(markers, function (index, value) {
+        if (value._lngLat.lng > neLon)
+            neLon = value._lngLat.lng;
+        if (value._lngLat.lng < swLon)
+            swLon = value._lngLat.lng;
+        if (value._lngLat.lat > neLat)
+            neLat = value._lngLat.lat;
+        if (value._lngLat.lat < swLat)
+            swLat = value._lngLat.lat;
     });
 
     console.log('setView after each', swLon, swLat, neLon, neLat);
@@ -217,67 +224,20 @@ function sendNewMarkerToServer(lng, lat, kounter, randomImg) {
 
     console.log('newMarker', newMarker);
     websocket2.send(JSON.stringify(newMarker));
-
 }
 
-var websocket2;
 
-function doWebSocket() {
-    console.log("uri " + "ws://" + document.location.host + document.location.pathname + "newmarkerendpoint");
+function sendNewMarkerToServerUsingRest(jsonobj) {
+    console.log('sendNewMarkerToServerUsingRest');
 
-    websocket2 = new WebSocket("ws://" + document.location.host + document.location.pathname + "newmarkerendpoint");
-
-    websocket2.onerror = function(evt) {
-        console.log('websocket2 onError', evt.data);
-    };
-
-    websocket2.onmessage = function(evt) {
-        console.log('websocket2 onMessage', evt.data);
-        var json = JSON.parse(evt.data);
-        console.log('json', json);
-
-        if (json.id === -1) {
-            console.log('delete received ', json);
-
-            for (var i = 0; i < markers.length; i++) {
-                if (json.lat === markers[i]._lngLat.lat && json.lng === markers[i]._lngLat.lng) {
-                    console.log('found it ', markers[i]);
-                    markers[i].remove();
-                    markers.splice(i, 1);
-                }
-            }
-
-            // var deleteme = markers.filter(marker => {
-            //     return json.lat === marker._lngLat.lat && json.lng === marker._lngLat.lng;
-            // });
-            // console.log('found it ', deleteme);
-            // deleteme[0].remove();
-            setView();
-        } else if (json.lng && json.lat) {
-            console.log('lnglattttt', json.lng, json.lat);
-
-            createMarker(json.lng, json.lat, false, json.randomImg);
-        } else {
-            for (var i = 0; i < json.length; i++) {
-                createMarker(json[i].lng, json[i].lat, false, json[i].randomImg);
-            }
+    $.ajax({
+        type: "POST",
+        url: "/javawebsockets/resources/greeting",
+        data: jsonobj,
+        dataType: "json",
+        contentType: "application/json",
+        success: function (a, b, c) {
+            console.log('successss', a, b, c, 'eennnddd');
         }
-
-    };
-}
-
-function clickMeButtonClicked() {
-    console.log('clickMeButtonClicked');
-    $.get("/javawebsockets/resources/greeting", function() {
-            console.log("success");
-        })
-        .done(function(a,b,c) {
-          console.log(a,b,c);
-        })
-        .fail(function() {
-            console.log("error");
-        })
-        .always(function() {
-            console.log("finished");
-        });
+    });
 }
