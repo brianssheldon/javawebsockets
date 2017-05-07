@@ -76,12 +76,11 @@ function createMarker(lng, lat, sendWS, randomImg) {
     el.style.height = '50px';
 
     // add marker to map
-    let mkr = markers.push(new mapboxgl.Marker(el, {
+    markers.push(new mapboxgl.Marker(el, {
         offset: [-25, -25]
     })
-            .setLngLat([lng, lat])
-            // .setPopup(popup)
-            .addTo(map));
+    .setLngLat([lng, lat])
+    .addTo(map));
 
     $('#markerId_' + kounter).append(
             '<div class="markerLabel" id="markerLabel_' + kounter + '">' + kounter + '</div>');
@@ -97,14 +96,13 @@ function createMarker(lng, lat, sendWS, randomImg) {
                     lng: markers[i]._lngLat.lng,
                     lat: markers[i]._lngLat.lat
                 };
-
+                   
                 websocket2.send(JSON.stringify(newMarker));
                 markers.splice(i, 1);
             }
         }
 
         this.remove();
-
         setView();
     });
 
@@ -112,12 +110,6 @@ function createMarker(lng, lat, sendWS, randomImg) {
     if (sendWS) {
         sendNewMarkerToServer(lng, lat, kounter, randomImg);
     }
-
-    sendNewMarkerToServerUsingRest({
-        id: kounter,
-        lng: lng,
-        lat: lat
-    });
 
     setView();
     kounter++;
@@ -153,7 +145,8 @@ function makePopupPicker(e) {
     let theHtml = '';
     theHtml += "<div id='popupmain' class='popupmain' ";
     theHtml += "style='left: " + x + "px; top: " + e.point.y + "px;'>";
-    theHtml += "<button class='buttonx' onclick='createMarker(" + lng + "," + lat + ", true)'>Add Marker</button>"
+    
+    theHtml += "<button class='buttonx' onclick='sendNewMarkerToServerUsingRest(" + lng + "," + lat + ", true)'>Add Marker</button>"
     theHtml += "<button class='buttonx' onclick='closePopup()'>Close</button>"
     theHtml += "<br></div>";
     $('#popup').append(theHtml);

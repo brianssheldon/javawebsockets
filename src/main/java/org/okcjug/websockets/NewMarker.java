@@ -20,14 +20,14 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/newmarkerendpoint", encoders = {MyJsonBeanEncoder.class}, decoders = {MyJsonBeanDecoder.class})
 public class NewMarker {
 
-    private static List<MyJsonBean> markers = new ArrayList();
+    public static List<MyJsonBean> markers = new ArrayList();
 
-    private static Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
+    public static Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
 
     @OnMessage
-    public void broadcastFigure(MyJsonBean figure, Session session) throws IOException, EncodeException {
+    public void broadcastFigure(MyJsonBean thebean, Session session) throws IOException, EncodeException {
 
-        JsonObject jo = figure.getJson();
+        JsonObject jo = thebean.getJson();
 
         System.out.println("xxxx broadcastFigure: " + jo.getInt("id"));
 
@@ -41,19 +41,19 @@ public class NewMarker {
                     for (Session peer : peers) {
                         if (!peer.equals(session)) {
                             System.out.println("sending delete " + jo);
-                            figure.setJson(jo);
-                            peer.getBasicRemote().sendObject(figure);
+                            thebean.setJson(jo);
+                            peer.getBasicRemote().sendObject(thebean);
                         }
                     }
                     markers.remove(i);
                 }
             }
         } else {
-            markers.add(figure);
+            markers.add(thebean);
             System.out.println("emitting markers: " + markers);
             for (Session peer : peers) {
                 if (!peer.equals(session)) {
-                    peer.getBasicRemote().sendObject(figure);
+                    peer.getBasicRemote().sendObject(thebean);
                 }
             }
         }

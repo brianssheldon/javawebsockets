@@ -1,18 +1,16 @@
 
-function sendNewMarkerToServerUsingRest(jsonobj) {
-    console.log('sendNewMarkerToServerUsingRest', jsonobj);
+function sendNewMarkerToServerUsingRest(lng, lat) {
+    console.log('sendNewMarkerToServerUsingRest');
     
-    if(jsonobj){
-        console.log('sendNewMarkerToServerUsingRest', jsonobj);
-    }else{
-        jsonobj = {id: 0, lng: -97.41222141127662, lat: 35.54616857358488};
-        console.log('sendNewMarkerToServerUsingRest 2', jsonobj);
-    }
+    var randomImg = 'images/a' + Math.floor((Math.random() * 8) + 1) + '.gif';
+    
+    var jsonobj = {id: 0, lng: lng, lat: lat, randomImg: randomImg};
+    console.log('sendNewMarkerToServerUsingRest', jsonobj);
         
     $.ajax({
         type: "POST",
         url: "/javawebsockets/resources/greeting",
-        data: jsonobj,
+        data: JSON.stringify(jsonobj),
         dataType: "json",
         contentType: "application/json",
         success: function (a, b, c) {
