@@ -8,17 +8,17 @@ import javax.ws.rs.POST;
 import javax.ws.rs.core.MediaType;
 
 @Path("/greeting")
-public class HelloWorldResource {
+public class RestfulResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getGreeting() {
-        return "howdy from helloworldresource getgreeting";
+    public String theGetMethod() {
+        return "howdy from RestfulResource theGetMethod";
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public void setNamex(String content) {
-        System.out.println("setNamex " + content);
+    public void thePostMethod(String content) {
+        System.out.println("RestfulResource thePostMethod " + content);
     }
 }
