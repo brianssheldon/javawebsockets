@@ -225,19 +225,3 @@ function sendNewMarkerToServer(lng, lat, kounter, randomImg) {
     console.log('newMarker', newMarker);
     websocket2.send(JSON.stringify(newMarker));
 }
-
-
-function sendNewMarkerToServerUsingRest(jsonobj) {
-    console.log('sendNewMarkerToServerUsingRest');
-
-    $.ajax({
-        type: "POST",
-        url: "/javawebsockets/resources/greeting",
-        data: jsonobj,
-        dataType: "json",
-        contentType: "application/json",
-        success: function (a, b, c) {
-            console.log('successss', a, b, c, 'eennnddd');
-        }
-    });
-}
