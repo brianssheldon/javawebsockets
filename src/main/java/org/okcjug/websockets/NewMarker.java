@@ -17,6 +17,8 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+// http://localhost:8080/javawebsockets/
+
 @ServerEndpoint(value = "/newmarkerendpoint", encoders = {MyJsonBeanEncoder.class}, decoders = {MyJsonBeanDecoder.class})
 public class NewMarker {
 
