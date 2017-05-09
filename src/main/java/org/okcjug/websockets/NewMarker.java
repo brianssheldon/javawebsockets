@@ -27,6 +27,7 @@ public class NewMarker {
     @OnMessage
     public void broadcastFigure(MyJsonBean thebean, Session session) throws IOException, EncodeException {
 
+        System.out.println("-------------------------broadcastFigure");
         JsonObject jo = thebean.getJson();
 
         if (jo.getInt("id") == -1) {
